@@ -75,4 +75,12 @@ public class Comment implements Serializable {
     public void setCmtUserId(String cmtUserId) {
         this.cmtUserId = cmtUserId;
     }
+
+    public String getBlogId() {
+        return blogId;
+    }
+
+    public void setBlogId(String blogId) {
+        this.blogId = blogId;
+    }
 }
