@@ -14,11 +14,16 @@ import java.util.Date;
 public class FeedBack implements Serializable {
 
     @Id
-    private String fbId;  // MongoDB uses String for ID by default
-    private String fbContent;
+    private String fbId;  
+    
+    private Long ticketId;   //mã vé đã mua của sự kiện
+    private Long eventId;  //id sự kiện
+    
+    
+    private String fbUserId; // nguoi đăng
+    private String fbContent; // nội dung của feedback
     private Date fbCreateDate;
-
-    private Long eventId;
+    private Long fbRate;  //đánh giá sao giá trị từ 1 đến 5
     // Getters and Setters
 
     public FeedBack() {
@@ -55,5 +60,13 @@ public class FeedBack implements Serializable {
 
     public void setFbCreateDate(Date fbCreateDate) {
         this.fbCreateDate = fbCreateDate;
+    }
+
+    public Long getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
     }
 }
