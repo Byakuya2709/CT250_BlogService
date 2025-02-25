@@ -7,19 +7,15 @@ package com.service.controller;
 import com.service.exception.ResponseHandler;
 import com.service.model.Blog;
 import com.service.model.Comment;
+import com.service.model.FeedBack;
 import com.service.request.BlogDTO;
 import com.service.request.CommentDTO;
 import com.service.service.BlogService;
+import com.service.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -31,7 +27,10 @@ public class BlogController {
     
     @Autowired
     private BlogService blogService;
-    
+
+    @Autowired
+    private FeedbackService feedbackService;
+
     @GetMapping("/get")
     public ResponseEntity<String> getBlog() {
         return ResponseEntity.ok("Blog data here");
@@ -62,5 +61,31 @@ public class BlogController {
         blogService.toggleEmotion(blogId, userId);
         Blog updatedBlog = blogService.getBlogById(blogId);
         return ResponseEntity.ok(updatedBlog);
+    }
+
+    //thuy
+    @PostMapping("/feedback/create")
+    public ResponseEntity<Object> createFeedBack(@RequestBody FeedBack feedBack) {
+        return feedbackService.createFeedBack(feedBack);
+    }
+
+    @GetMapping("/feedback/all")
+    public ResponseEntity<Object> getAllFeedBacks() {
+        return feedbackService.getAllFeedBacks();
+    }
+
+    @GetMapping("/feedback/{id}")
+    public ResponseEntity<Object> getFeedBackById(@PathVariable String id) {
+        return feedbackService.getFeedBackById(id);
+    }
+
+    @PutMapping("/feedback/update/{id}")
+    public ResponseEntity<Object> updateFeedBack(@PathVariable String id, @RequestBody FeedBack feedBack) {
+        return feedbackService.updateFeedBack(id, feedBack);
+    }
+
+    @DeleteMapping("/feedback/delete/{id}")
+    public ResponseEntity<Object> deleteFeedBack(@PathVariable String id) {
+        return feedbackService.deleteFeedBack(id);
     }
 }
