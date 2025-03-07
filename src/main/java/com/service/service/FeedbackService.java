@@ -25,6 +25,9 @@ public class FeedbackService {
             if (feedBack.getFbContent() == null || feedBack.getFbContent().isEmpty()) {
                 throw new BadRequestException("Nội dung phản hồi không thể để trống.");
             }
+            if (feedBack.getFbRate() < 1 || feedBack.getFbRate() > 5) {
+                throw new BadRequestException("Số sao đánh giá phải nằm trong khoảng từ 1 đến 5.");
+            }
             FeedBack createdFeedBack = feedBackRepository.save(feedBack);
             return ResponseHandler.resBuilder("Tạo phản hồi thành công.", HttpStatus.CREATED, createdFeedBack);
         } catch (BadRequestException ex) {
@@ -66,10 +69,14 @@ public class FeedbackService {
             if (details.getFbContent() == null || details.getFbContent().isEmpty()) {
                 throw new BadRequestException("Nội dung phản hồi không thể để trống.");
             }
+            if (details.getFbRate() < 1 || details.getFbRate() > 5) {
+                throw new BadRequestException("Số sao đánh giá phải nằm trong khoảng từ 1 đến 5.");
+            }
 
             existFeedBack.setFbContent(details.getFbContent());
             existFeedBack.setFbCreateDate(details.getFbCreateDate());
             existFeedBack.setEventId(details.getEventId());
+            existFeedBack.setFbRate(details.getFbRate()); // Cập nhật thuộc tính fbRate
 
             FeedBack updatedFeedBack = feedBackRepository.save(existFeedBack);
             return ResponseHandler.resBuilder("Cập nhật phản hồi thành công.", HttpStatus.OK, updatedFeedBack);

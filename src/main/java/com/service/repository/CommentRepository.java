@@ -18,4 +18,7 @@ public interface CommentRepository extends MongoRepository<Comment, String> {
 
     // Lấy tất cả các bình luận theo blogId
     List<Comment> findByBlogId(String blogId);
+
+    //đếm số lượng bình luận của blog
+    long countByBlogId(String blogId);
 }

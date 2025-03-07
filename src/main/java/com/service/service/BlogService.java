@@ -5,6 +5,7 @@
 package com.service.service;
 
 import com.service.exception.BlogNotFoundException;
+import com.service.exception.CommentNotFoundException;
 import com.service.model.Blog;
 import com.service.model.BlogEmotion;
 import com.service.model.Comment;
@@ -13,8 +14,11 @@ import com.service.repository.BlogRepository;
 import com.service.repository.CommentRepository;
 import com.service.request.BlogDTO;
 import com.service.request.CommentDTO;
+
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,25 +39,28 @@ public class BlogService {
     @Autowired
     private BlogEmotionRepository blogEmotionRepository;
 
-    public Blog uploadBlog(BlogDTO blogDTO) {
-        // Tạo đối tượng Blog từ BlogDTO
-        Blog blog = new Blog();
+    //lấy tất cả blog
+    public List<Blog> findAllBlogs() {
+        return blogRepository.findAll();
+    }
 
+    //sửa
+    public Blog uploadBlog(BlogDTO blogDTO, String userId) {
+        Blog blog = new Blog();
         blog.setBlogSubject(blogDTO.getBlogSubject());
         blog.setBlogContent(blogDTO.getBlogContent());
         blog.setBlogType(blogDTO.getBlogType());
-
-        blog.setEventListImgURL(blogDTO.getEventListImgURL());
         blog.setBlogCreateDate(new Date());
         blog.setBlogUpdateDate(new Date());
-        blog.setBlogEmotionsNumber(blogDTO.getBlogEmotionsNumber());
-
-        blog.setBlogUserId(blogDTO.getBlogUserId()); // Giả sử userId đã có sẵn
+        blog.setBlogEmotionsNumber(0);
+        blog.setUserId(userId); // Gán userId cho blog
         blog.setEventId(blogDTO.getEventId());
-        // Lưu blog vào MongoDB
+        blog.setEventListImgURL(blogDTO.getEventListImgURL());
+
         return blogRepository.save(blog);
     }
 
+    //thuy
     public Comment postComment(CommentDTO dto, String blogId) {
         Comment cmt = new Comment();
         cmt.setCmtContent(dto.getCmtContent());
@@ -62,12 +69,56 @@ public class BlogService {
         cmt.setCmtUserId(dto.getCmtUserId());
         cmt.setBlogId(blogId);
 
-        return commentRepository.save(cmt);
+        Comment savedComment = commentRepository.save(cmt);
+
+        // Cập nhật số lượng bình luận từ cơ sở dữ liệu
+        long commentCount = commentRepository.countByBlogId(blogId);
+        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new BlogNotFoundException("Blog not found"));
+        blog.setCommentCount((int) commentCount);
+        blogRepository.save(blog);
+
+        return savedComment;
     }
+
+//    public Comment postComment(CommentDTO dto, String blogId) {
+//        Comment cmt = new Comment();
+//        cmt.setCmtContent(dto.getCmtContent());
+//        cmt.setCmtCreateDate(new Date());
+//        cmt.setCmtEmotionsNumber(dto.getCmtEmotionsNumber());
+//        cmt.setCmtUserId(dto.getCmtUserId());
+//        cmt.setBlogId(blogId);
+//
+//        return commentRepository.save(cmt);
+//    }
     
      public Blog getBlogById(String blogId) {
         return blogRepository.findById(blogId).orElseThrow(() -> new BlogNotFoundException("Blog not found"));
     }
+
+    //lấy comment - thuy
+    public List<Comment> getCommentsByBlogId(String blogId) {
+        return commentRepository.findByBlogId(blogId);
+    }
+
+    //xóa comment - thuy
+    public void deleteComment(String blogId, String commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+        commentRepository.delete(comment);
+
+        // Cập nhật số lượng bình luận từ cơ sở dữ liệu
+        long commentCount = commentRepository.countByBlogId(blogId);
+        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new BlogNotFoundException("Blog not found"));
+        blog.setCommentCount((int) commentCount);
+        blogRepository.save(blog);
+    }
+
+    //chỉnh sửa bình luận
+    public Comment updateComment(String blogId, String commentId, CommentDTO commentDTO) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+        comment.setCmtContent(commentDTO.getCmtContent());
+        return commentRepository.save(comment);
+    }
+
     public void toggleEmotion(String blogId, String userId) {
         Optional<BlogEmotion> existingEmotion = blogEmotionRepository.findByBlogIdAndUserId(blogId, userId);
 
@@ -100,5 +151,10 @@ public class BlogService {
             blog.setBlogEmotionsNumber(blog.getBlogEmotionsNumber() + 1);
             blogRepository.save(blog);
         }
+    }
+
+    // Thêm phương thức lấy danh sách blog theo userId
+    public List<Blog> getBlogsByUser(String userId) {
+        return blogRepository.findByUserId(userId);
     }
 }

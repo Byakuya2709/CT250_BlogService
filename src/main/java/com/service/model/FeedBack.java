@@ -17,9 +17,10 @@ public class FeedBack implements Serializable {
     private String fbId;  // MongoDB uses String for ID by default
     private String fbContent;
     private Date fbCreateDate;
+    private int fbRate; //mới thêm
 
+    private String ticketId;//mới thêm
     private Long eventId;
-    // Getters and Setters
 
     public FeedBack() {
     }
@@ -55,5 +56,21 @@ public class FeedBack implements Serializable {
 
     public void setFbCreateDate(Date fbCreateDate) {
         this.fbCreateDate = fbCreateDate;
+    }
+
+    public int getFbRate() {
+        return fbRate;
+    }
+
+    public void setFbRate(int fbRate) {
+        this.fbRate = fbRate;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 }

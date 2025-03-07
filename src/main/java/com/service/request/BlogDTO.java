@@ -18,8 +18,9 @@ public class BlogDTO {
     private int blogEmotionsNumber;
     private Long eventId;
     private String blogUserId;
-    private List<String> eventListImgURL;
+    private List<String> eventListImgURL; // Danh sách URL ảnh
 
+    private int commentCount; //đếm số cmt-thuy
     // Getter và Setter
     public String getBlogSubject() {
         return blogSubject;
@@ -53,12 +54,6 @@ public class BlogDTO {
         this.eventId = eventId;
     }
 
-  
-
-    public List<String> getEventListImgURL() {
-        return eventListImgURL;
-    }
-
     public int getBlogEmotionsNumber() {
         return blogEmotionsNumber;
     }
@@ -73,6 +68,10 @@ public class BlogDTO {
 
     public void setBlogUserId(String blogUserId) {
         this.blogUserId = blogUserId;
+    }
+
+    public List<String> getEventListImgURL() {
+        return eventListImgURL;
     }
 
     public void setEventListImgURL(List<String> eventListImgURL) {

@@ -1,47 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.service.model;
+package com.service.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.io.Serializable;
+import com.service.model.Blog;
+
 import java.util.Date;
 import java.util.List;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-/**
- *
- * @author admin
- */
-@Document(collection = "blogs")
-public class Blog implements Serializable {
-
-    @Id
+public class OneBlogResponse {
     private String blogId;
-
     private String blogSubject;
     private String blogContent;
     private String blogType;
-    
+
     private Date blogCreateDate;
     private Date blogUpdateDate;
     private int blogEmotionsNumber;
 
     private String userId; //của công ty đăng blog
-    
-    @Indexed
+
     private Long eventId;
-    
     private List<String> eventListImgURL;
 
-    private int commentCount; //lấy số cmt - thuy
+    // Method to convert Blog to OneBlogResponse
+    public static OneBlogResponse toBlogResponse(Blog blog) {
+        OneBlogResponse res = new OneBlogResponse();
+        res.setBlogId(blog.getBlogId());
+        res.setBlogSubject(blog.getBlogSubject());
+        res.setBlogContent(blog.getBlogContent());
+        res.setBlogType(blog.getBlogType());
+        res.setBlogCreateDate(blog.getBlogCreateDate());
+        res.setBlogUpdateDate(blog.getBlogUpdateDate());
+        res.setBlogEmotionsNumber(blog.getBlogEmotionsNumber());
+        res.setUserId(blog.getUserId());
+        res.setEventId(blog.getEventId());
+        res.setEventListImgURL(blog.getEventListImgURL());
+        return res;
+    }
 
-    public Blog() {
+    public OneBlogResponse() {
     }
 
     public String getBlogId() {
@@ -100,12 +95,12 @@ public class Blog implements Serializable {
         this.blogEmotionsNumber = blogEmotionsNumber;
     }
 
-    public List<String> getEventListImgURL() {
-        return eventListImgURL;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setEventListImgURL(List<String> eventListImgURL) {
-        this.eventListImgURL = eventListImgURL;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Long getEventId() {
@@ -116,20 +111,11 @@ public class Blog implements Serializable {
         this.eventId = eventId;
     }
 
-    public String getUserId() {
-        return userId;
+    public List<String> getEventListImgURL() {
+        return eventListImgURL;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    //
-    public int getCommentCount() {
-        return commentCount;
-    }
-
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
+    public void setEventListImgURL(List<String> eventListImgURL) {
+        this.eventListImgURL = eventListImgURL;
     }
 }
