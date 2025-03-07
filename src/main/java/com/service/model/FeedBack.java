@@ -29,6 +29,22 @@ public class FeedBack implements Serializable {
     public FeedBack() {
     }
 
+    public String getFbUserId() {
+        return fbUserId;
+    }
+
+    public void setFbUserId(String fbUserId) {
+        this.fbUserId = fbUserId;
+    }
+
+    public Long getFbRate() {
+        return fbRate;
+    }
+
+    public void setFbRate(Long fbRate) {
+        this.fbRate = fbRate;
+    }
+
     public Long getEventId() {
         return eventId;
     }

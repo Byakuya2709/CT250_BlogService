@@ -13,9 +13,13 @@ import com.service.repository.BlogRepository;
 import com.service.repository.CommentRepository;
 import com.service.request.BlogDTO;
 import com.service.request.CommentDTO;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,8 +34,7 @@ public class BlogService {
 
     @Autowired
     private CommentRepository commentRepository;
-    
-    
+
     @Autowired
     private BlogEmotionRepository blogEmotionRepository;
 
@@ -64,10 +67,15 @@ public class BlogService {
 
         return commentRepository.save(cmt);
     }
-    
-     public Blog getBlogById(String blogId) {
+
+    public Blog getBlogById(String blogId) {
         return blogRepository.findById(blogId).orElseThrow(() -> new BlogNotFoundException("Blog not found"));
     }
+
+    public Page<Comment> getAllCommentOfBlog(String blogId, Pageable pageable){
+        return commentRepository.findByBlogId(blogId, pageable);
+    }
+    
     public void toggleEmotion(String blogId, String userId) {
         Optional<BlogEmotion> existingEmotion = blogEmotionRepository.findByBlogIdAndUserId(blogId, userId);
 
@@ -101,4 +109,32 @@ public class BlogService {
             blogRepository.save(blog);
         }
     }
+
+    public Page<Blog> getBlogs(Long eventId, String userId, Integer month, Integer year, Pageable pageable) {
+        boolean hasUserId = userId != null && !userId.trim().isEmpty();
+        boolean hasEventId = eventId != null; // Không dùng .trim().isEmpty vì eventId là Long
+        boolean hasMonth = month != null;
+        boolean hasYear = year != null;
+
+        System.out.println("eventId: " + eventId + ", userId: " + userId + ", month: " + month + ", year: " + year);
+
+        if (hasEventId && hasUserId && hasMonth && hasYear) {
+            return blogRepository.findByEventIdAndBlogUserIdAndMonthAndYear(eventId, userId, month, year, pageable);
+        } else if (hasEventId && hasMonth && hasYear) {
+            return blogRepository.findByEventIdAndMonthAndYear(eventId, month, year, pageable);
+        } else if (hasUserId && hasMonth && hasYear) {
+            return blogRepository.findByBlogUserIdAndMonthAndYear(userId, month, year, pageable);
+        } else if (hasMonth && hasYear) {
+            return blogRepository.findByMonthAndYear(month, year, pageable);
+        } else if (hasEventId && hasUserId) {
+            return blogRepository.findByEventIdAndBlogUserId(eventId, userId, pageable);
+        } else if (hasEventId) {
+            return blogRepository.findByEventId(eventId, pageable);
+        } else if (hasUserId) {
+            return blogRepository.findByBlogUserId(userId, pageable);
+        } else {
+            return blogRepository.findAll(pageable);
+        }
+    }
+
 }
