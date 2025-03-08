@@ -12,6 +12,7 @@ import com.service.request.BlogDTO;
 import com.service.request.CommentDTO;
 import com.service.service.BlogService;
 import com.service.service.FeedbackService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,6 @@ public class BlogController {
 
     @Autowired
     private FeedbackService feedbackService;
-    
 
     @GetMapping("/filter")
     public ResponseEntity<?> getBlog(
@@ -53,8 +53,13 @@ public class BlogController {
         }
     }
 
+    @GetMapping("/recent")
+    public List<Blog> getRecentBlogs() {
+        return blogService.getRecentBlogs();
+    }
+
     @GetMapping("{blogId}")
-     public ResponseEntity<?> getBlog(@PathVariable String blogId
+    public ResponseEntity<?> getBlog(@PathVariable String blogId
     ) {
         try {
             Blog blog = blogService.getBlogById(blogId);
@@ -63,9 +68,10 @@ public class BlogController {
             return ResponseHandler.resBuilder("Có lỗi xảy ra lấy tạo bài viết." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
+
     @GetMapping("/{blogId}/comment")
-     public ResponseEntity<?> getAllCommenOftBlog(@PathVariable String blogId,
-              @RequestParam(defaultValue = "0") int page, // Đổi mặc định về 0 để tránh lỗi
+    public ResponseEntity<?> getAllCommenOftBlog(@PathVariable String blogId,
+            @RequestParam(defaultValue = "0") int page, // Đổi mặc định về 0 để tránh lỗi
             @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
@@ -75,6 +81,7 @@ public class BlogController {
             return ResponseHandler.resBuilder("Có lỗi xảy ra lấy tạo bài viết." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
+
     @PostMapping("")
     public ResponseEntity<?> uploadBlog(@RequestBody BlogDTO blogDTO) {
         try {
@@ -85,8 +92,6 @@ public class BlogController {
         }
     }
 
-    
-    
     @PostMapping("/{blogId}/comment")
     public ResponseEntity<?> uploadBlogComment(@RequestBody CommentDTO commentDTO, @PathVariable String blogId) {
         try {

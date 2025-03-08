@@ -6,6 +6,7 @@ package com.service.repository;
 
 import com.service.model.Blog;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,8 @@ public interface BlogRepository extends MongoRepository<Blog, String> {
 
     Optional<Blog> findById(String blogId);
 // Tìm blog theo eventId với phân trang
+
+    List<Blog> findTop10ByOrderByBlogCreateDateDesc();
 
     Page<Blog> findAll(Pageable pageable);
 

@@ -16,6 +16,7 @@ import com.service.request.CommentDTO;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -110,6 +111,10 @@ public class BlogService {
         }
     }
 
+     public List<Blog> getRecentBlogs() {
+        return blogRepository.findTop10ByOrderByBlogCreateDateDesc();
+    }
+    
     public Page<Blog> getBlogs(Long eventId, String userId, Integer month, Integer year, Pageable pageable) {
         boolean hasUserId = userId != null && !userId.trim().isEmpty();
         boolean hasEventId = eventId != null; // Không dùng .trim().isEmpty vì eventId là Long
