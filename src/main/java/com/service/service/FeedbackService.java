@@ -23,8 +23,15 @@ public class FeedbackService {
     public ResponseEntity<Object> createFeedBack(FeedBack feedBack) {
         try {
             if (feedBack.getFbContent() == null || feedBack.getFbContent().isEmpty()) {
-                throw new BadRequestException("Nội dung phản hồi không thể để trống.");
+                return ResponseHandler.resBuilder("Nội dung không được bỏ trống", HttpStatus.BAD_REQUEST, null);
             }
+             // Kiểm tra ticketId
+            if (feedBack.getTicketId() == null) {
+                return ResponseHandler.resBuilder("Mã vé không được để trống", HttpStatus.BAD_REQUEST, null);
+            }
+            if (feedBackRepository.existsByTicketId(feedBack.getTicketId()))
+                return ResponseHandler.resBuilder("1 vé chỉ có 1 đánh giá thôi", HttpStatus.BAD_REQUEST, null);
+            
             FeedBack createdFeedBack = feedBackRepository.save(feedBack);
             return ResponseHandler.resBuilder("Tạo phản hồi thành công.", HttpStatus.CREATED, createdFeedBack);
         } catch (BadRequestException ex) {

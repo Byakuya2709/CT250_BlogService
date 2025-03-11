@@ -10,6 +10,8 @@ import com.service.model.Comment;
 import com.service.model.FeedBack;
 import com.service.request.BlogDTO;
 import com.service.request.CommentDTO;
+import com.service.request.EditBlog;
+import com.service.request.UpdateComment;
 import com.service.service.BlogService;
 import com.service.service.FeedbackService;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -74,7 +77,7 @@ public class BlogController {
             @RequestParam(defaultValue = "0") int page, // Đổi mặc định về 0 để tránh lỗi
             @RequestParam(defaultValue = "10") int size) {
         try {
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "cmtCreateDate"));
             Page<Comment> listCmt = blogService.getAllCommentOfBlog(blogId, pageable);
             return ResponseHandler.resBuilder("Lấy thông bài viết thành công.", HttpStatus.OK, listCmt);
         } catch (Exception e) {
@@ -102,11 +105,51 @@ public class BlogController {
         }
     }
 
+    @PatchMapping("/comment/{commentId}")
+    public ResponseEntity<?> editComment(@PathVariable String commentId, @RequestBody UpdateComment req) {
+        try {
+            Comment cmt = blogService.updateComment(commentId, req);
+            return ResponseHandler.resBuilder("Cập nhật bình luận thành công", HttpStatus.OK, cmt);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @DeleteMapping("/{blogId}")
+    public ResponseEntity<?> deleteBlogAndComment(@PathVariable String blogId) {
+        try {
+            blogService.deleteBlogAndCommentRelated(blogId);
+            return ResponseHandler.resBuilder("Xóa bài viết và các bài đăng thành công", HttpStatus.CREATED, null);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @PatchMapping("/{blogId}")
+    public ResponseEntity<?> editBlog(@PathVariable String blogId, @RequestBody EditBlog req) {
+        try {
+            Blog blog = blogService.updateCurrentBlog(blogId, req);
+            return ResponseHandler.resBuilder("Cập nhật bài đăng thành công", HttpStatus.OK, blog);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
     @PostMapping("/{blogId}/emotion")
     public ResponseEntity<Blog> toggleEmotion(@PathVariable String blogId, @RequestParam String userId) {
         blogService.toggleEmotion(blogId, userId);
         Blog updatedBlog = blogService.getBlogById(blogId);
         return ResponseEntity.ok(updatedBlog);
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<?> DeleteComment(@PathVariable String commentId) {
+        try {
+            blogService.deleteComment(commentId);
+            return ResponseHandler.resBuilder("Xóa bình luận bài viết thành công.", HttpStatus.OK, null);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
     }
 
     //thuy

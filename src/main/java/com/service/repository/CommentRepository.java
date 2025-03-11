@@ -20,4 +20,6 @@ public interface CommentRepository extends MongoRepository<Comment, String> {
 
     // Lấy tất cả các bình luận theo blogId
     Page<Comment> findByBlogId(String blogId,Pageable pageable);
+    
+     void deleteByBlogId(String blogId);
 }
