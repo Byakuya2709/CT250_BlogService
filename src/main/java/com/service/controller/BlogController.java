@@ -157,24 +157,50 @@ public class BlogController {
     public ResponseEntity<Object> createFeedBack(@RequestBody FeedBack feedBack) {
         return feedbackService.createFeedBack(feedBack);
     }
-
-    @GetMapping("/feedback")
-    public ResponseEntity<Object> getAllFeedBacks() {
-        return feedbackService.getAllFeedBacks();
-    }
-
-    @GetMapping("/feedback/{id}")
-    public ResponseEntity<Object> getFeedBackById(@PathVariable String id) {
-        return feedbackService.getFeedBackById(id);
-    }
-
-    @PutMapping("/feedback/update/{id}")
-    public ResponseEntity<Object> updateFeedBack(@PathVariable String id, @RequestBody FeedBack feedBack) {
-        return feedbackService.updateFeedBack(id, feedBack);
-    }
-
-    @DeleteMapping("/feedback/delete/{id}")
+    @DeleteMapping("/feedback/{id}")
     public ResponseEntity<Object> deleteFeedBack(@PathVariable String id) {
         return feedbackService.deleteFeedBack(id);
+    }
+
+//    @GetMapping("/feedback")
+//    public ResponseEntity<Object> getAllFeedBacks() {
+//        return feedbackService.getAllFeedBacks();
+//    }
+//
+//    @GetMapping("/feedback/{id}")
+//    public ResponseEntity<Object> getFeedBackById(@PathVariable String id) {
+//        return feedbackService.getFeedBackById(id);
+//    }
+//
+//    @PutMapping("/feedback/update/{id}")
+//    public ResponseEntity<Object> updateFeedBack(@PathVariable String id, @RequestBody FeedBack feedBack) {
+//        return feedbackService.updateFeedBack(id, feedBack);
+//    }
+//
+
+    @GetMapping("/feedbacks/event/{eventId}")
+    public ResponseEntity<?> getAllFeedBackOfEvent(@PathVariable Long eventId,
+            @RequestParam(defaultValue = "0") int page, // Đổi mặc định về 0 để tránh lỗi
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fbCreateDate"));
+            Page<FeedBack> list = feedbackService.getAllFBByEventId(eventId, pageable);
+            return ResponseHandler.resBuilder("Lấy thông bài viết thành công.", HttpStatus.OK, list);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Có lỗi xảy ra lấy lấy đánh giá." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @GetMapping("/feedbacks/user/{userId}")
+    public ResponseEntity<?> getAllFeedBackOfEvent(@PathVariable String userId,
+            @RequestParam(defaultValue = "0") int page, // Đổi mặc định về 0 để tránh lỗi
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fbCreateDate"));
+            Page<FeedBack> list = feedbackService.getAllFBByUser(userId, pageable);
+            return ResponseHandler.resBuilder("Lấy thông đánh giá thành công.", HttpStatus.OK, list);
+        } catch (Exception e) {
+            return ResponseHandler.resBuilder("Có lỗi xảy ra lấy đánh giá." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
     }
 }
